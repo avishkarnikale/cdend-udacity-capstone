@@ -60,7 +60,7 @@ Resources:
             - CidrIp: 0.0.0.0/0
               IpProtocol: tcp
               FromPort: 22
-              ToPort: 22s
+              ToPort: 22
             Tags:
             -   Key: Name
                 Value: !Sub ${EnvironmentName}-SECGRP-JENKINS
