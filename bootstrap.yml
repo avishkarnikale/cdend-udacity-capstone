@@ -102,6 +102,7 @@ Resources:
             Tags:
             -   Key: Name
                 Value: !Sub ${EnvironmentName}-SECGRP-JENKINS
+                
     JenkinsRole:
         Type: AWS::IAM::Role
         Properties:
@@ -125,10 +126,10 @@ Resources:
         Properties: 
           Roles: [!Ref JenkinsRole]
     
-    Ec2Instance: 
+    JenkinsInstance: 
         Type: AWS::EC2::Instance
         Properties: 
-            ImageId: "ami-03b6f27628a4569c8"
+            ImageId: "ami-03b6f27628a4569c8" #for Singapore ap-southeast-1 region
             InstanceType: t2.micro
             IamInstanceProfile: !Ref JenkinsProfile
             SecurityGroupIds: [!Ref SecurityGroupForJenkinsServer]
