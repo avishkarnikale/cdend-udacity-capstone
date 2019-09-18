@@ -13,6 +13,11 @@ Parameters:
         Description: Please enter the IP range (CIDR notation) for the VPC in the region
         Type: String
         Default: 10.0.0.0/16
+    PublicSubnetCIDR:
+        Description: Please enter the IP range (CIDR notation) for the PUBLIC subnet in the 1st Availability Zone
+        Type: String
+        Default: 10.0.0.0/24
+
 
 Resources:
     # Let us define the base/global components first 
@@ -42,6 +47,39 @@ Resources:
         Properties:
             InternetGatewayId: !Ref IGW
             VpcId: !Ref VPC
+            
+    PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties: 
+            VpcId: !Ref VPC
+            Tags: 
+              - Key: Name 
+                Value: !Sub ${EnvironmentName} Public Routes
+    
+    DefaultPublicRoute: 
+        Type: AWS::EC2::Route
+        DependsOn: IGWAttachment
+        Properties: 
+            RouteTableId: !Ref PublicRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId: !Ref IGW
+
+    PublicSubnet: 
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            AvailabilityZone: !Select [ 0, !GetAZs '' ]
+            CidrBlock: !Ref PublicSubnetCIDR
+            MapPublicIpOnLaunch: true
+            Tags: 
+                - Key: Name 
+                  Value: !Sub ${EnvironmentName}-PUBLIC-SUBNET-AZ-(1)
+    
+    PublicSubnetRouteTableAssociation:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            SubnetId: !Ref PublicSubnet
                 
     SecurityGroupForJenkinsServer:
         Type: AWS::EC2::SecurityGroup
@@ -75,5 +113,45 @@ Resources:
                 Service:
                 - ec2.amazonaws.com
               Action:
-              - sts:AssumeRole
+                - sts:AssumeRole
           Path: "/"
+          ManagedPolicyArns:
+            - arn:aws:iam::aws:policy/AmazonS3FullAccess
+            - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+            - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+            
+    JenkinsProfile:
+        Type: AWS::IAM::InstanceProfile
+        Properties: 
+          Roles: [!Ref JenkinsRole]
+    
+    Ec2Instance: 
+        Type: AWS::EC2::Instance
+        Properties: 
+            ImageId: "ami-03b6f27628a4569c8"
+            InstanceType: t2.micro
+            IamInstanceProfile: !Ref JenkinsProfile
+            SecurityGroupIds: [!Ref SecurityGroupForJenkinsServer]
+            KeyName: "DockerServer"
+            SubnetId: !Ref PublicSubnet
+            
+            BlockDeviceMappings:
+              - DeviceName: "/dev/xvda"
+                Ebs:
+                    VolumeSize: 24
+                    VolumeType: gp2
+            
+            UserData:
+                Fn::Base64: !Sub |
+                    #!/bin/bash
+
+                    sudo apt -y update
+                    sudo apt -y upgrade
+                    sudo apt -y install default-jdk
+                    sudo wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+                    sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+                    sudo apt -y update
+                    sudo apt -y install jenkins
+                    sudo systemctl status jenkins
+                    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+                    
