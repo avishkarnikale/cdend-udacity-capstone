@@ -74,9 +74,6 @@ Resources:
               Principal:
                 Service:
                 - ec2.amazonaws.com
-                - vpc.amazonaws.com
-                - s3.amazonaws.com
-                - cloudformation.amazonaws.com
               Action:
               - sts:AssumeRole
           Path: "/"
