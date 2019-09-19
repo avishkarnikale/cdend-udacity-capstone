@@ -4,7 +4,7 @@ pipeline {
     stage('Get Creds') {
        steps {
                 sh 'sudo su'
-                sh 'sudo eval $(aws ecr get-login --no-include-email --region ap-southeast-1)'
+                sh 'eval $(aws ecr get-login --no-include-email --region ap-southeast-1)'
        }
     }
     stage('Tag Image') {
