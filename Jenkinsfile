@@ -9,8 +9,7 @@ pipeline {
                         
                      STR=$( aws ecr get-login --no-include-email --region ap-southeast-1 )
                      STR2="sudo "   
-                     echo "$STR2$STR"
-                     
+                     eval "$STR2$STR"
                      
                      '''
        }
