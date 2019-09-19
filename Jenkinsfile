@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Get Creds') {
        steps {
-                sh "( aws ecr get-login --no-include-email --region ap-southeast-1 | sed 's|https://||')"
+                sh "( aws ecr get-login --no-include-email --region ap-southeast-1 )"
        }
     }
     stage('Tag Image') {
