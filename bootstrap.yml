@@ -156,3 +156,17 @@ Resources:
                     sudo systemctl status jenkins
                     sudo cat /var/lib/jenkins/secrets/initialAdminPassword
                     
+Outputs: 
+
+    VPC: 
+        Description: A reference to the created VPC
+        Value: !Ref VPC
+        Export:
+          Name: !Sub ${EnvironmentName}-VPCID
+
+    VPCPublicRouteTable:
+        Description: Public Routing
+        Value: !Ref PublicRouteTable
+        Export:
+          Name: !Sub ${EnvironmentName}-PUBLIC-ROUTE-TABLE
+
