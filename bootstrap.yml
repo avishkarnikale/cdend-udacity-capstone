@@ -102,7 +102,6 @@ Resources:
             Tags:
             -   Key: Name
                 Value: !Sub ${EnvironmentName}-SECGRP-JENKINS
-                
     JenkinsRole:
         Type: AWS::IAM::Role
         Properties:
@@ -120,7 +119,7 @@ Resources:
             - arn:aws:iam::aws:policy/AmazonS3FullAccess
             - arn:aws:iam::aws:policy/AmazonEC2FullAccess
             - arn:aws:iam::aws:policy/AmazonVPCFullAccess
-            
+
     JenkinsProfile:
         Type: AWS::IAM::InstanceProfile
         Properties: 
@@ -129,7 +128,29 @@ Resources:
     JenkinsInstance: 
         Type: AWS::EC2::Instance
         Properties: 
-            ImageId: "ami-03b6f27628a4569c8" #for Singapore ap-southeast-1 region
+            UserData:
+                Fn::Base64: !Sub |
+                    #!/bin/bash
+                    touch /var/log/avi2.txt
+                    apt -y update
+                    apt -y install default-jdk
+                    wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+                    sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+                    apt -y update
+                    apt -y install jenkins
+                    apt -y install jx
+                    #curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+                    #chmod +x ./kubectl
+                    #mv ./kubectl /usr/local/bin/kubectl
+                    #apt -y install docker.io
+                    #curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+                    #chmod +x minikube
+                    #mv minikube /usr/local/bin/
+                    #systemctl enable kubelet.service
+                    #minikube start --vm-driver=none
+                    
+                    
+            ImageId: "ami-03b6f27628a4569c8"
             InstanceType: t2.micro
             IamInstanceProfile: !Ref JenkinsProfile
             SecurityGroupIds: [!Ref SecurityGroupForJenkinsServer]
@@ -141,32 +162,5 @@ Resources:
                 Ebs:
                     VolumeSize: 24
                     VolumeType: gp2
-            
-            UserData:
-                Fn::Base64: !Sub |
-                    #!/bin/bash
 
-                    sudo apt -y update
-                    sudo apt -y upgrade
-                    sudo apt -y install default-jdk
-                    sudo wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-                    sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-                    sudo apt -y update
-                    sudo apt -y install jenkins
-                    sudo systemctl status jenkins
-                    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-                    
-Outputs: 
-
-    VPC: 
-        Description: A reference to the created VPC
-        Value: !Ref VPC
-        Export:
-          Name: !Sub ${EnvironmentName}-VPCID
-
-    VPCPublicRouteTable:
-        Description: Public Routing
-        Value: !Ref PublicRouteTable
-        Export:
-          Name: !Sub ${EnvironmentName}-PUBLIC-ROUTE-TABLE
-
+                  
