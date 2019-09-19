@@ -119,6 +119,7 @@ Resources:
             - arn:aws:iam::aws:policy/AmazonS3FullAccess
             - arn:aws:iam::aws:policy/AmazonEC2FullAccess
             - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+            - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
 
     JenkinsProfile:
         Type: AWS::IAM::InstanceProfile
@@ -139,6 +140,14 @@ Resources:
                     apt -y update
                     apt -y install jenkins
                     apt -y install jx
+                    apt -y install make
+                    curl -Lo hadolint https://github.com/hadolint/hadolint/releases/download/v1.17.2/hadolint-Linux-x86_64
+                    chmod +x hadolint
+                    mv hadolint /usr/local/bin
+                    apt -y install tidy
+                    apt -y install python3-venv
+                    apt -y install pylint
+                    apt -y install python3-pip
                     #curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
                     #chmod +x ./kubectl
                     #mv ./kubectl /usr/local/bin/kubectl
@@ -162,5 +171,6 @@ Resources:
                 Ebs:
                     VolumeSize: 24
                     VolumeType: gp2
+
 
                   
