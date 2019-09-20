@@ -19,5 +19,14 @@ pipeline {
                 }
               }
            }
+	   stage('Direct to Blue Zone') {
+		steps {
+			withAWS(region:'us-east-1', credentials:'aws-static') {
+				sh '''
+					kubectl apply -f lb-service-direct-blue-zone.json
+				'''
+			}
+		}
+	}
   }
 }
