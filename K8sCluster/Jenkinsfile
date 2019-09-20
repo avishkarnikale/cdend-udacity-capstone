@@ -27,7 +27,7 @@ pipeline {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
 					sh '''
-						aws eks --region us-east-1 update-kubeconfig --name app-cluster
+						aws eks --region ap-southeast-1 update-kubeconfig --name app-cluster
 					'''
 				}
 			}
