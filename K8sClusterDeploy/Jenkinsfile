@@ -1,11 +1,20 @@
 pipeline {
 	agent any
 	stages {
-          stage('Deploy Blue') {
+          stage('Deploy Blue Zone') {
               steps {
                 withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
                   sh '''
 		    kubectl apply -f release-controller-blue-zone.json
+                  '''
+                }
+              }
+           }
+	   stage('Deploy Green Zone') {
+              steps {
+                withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
+                  sh '''
+		    kubectl apply -f release-controller-green-zone.json
                   '''
                 }
               }
