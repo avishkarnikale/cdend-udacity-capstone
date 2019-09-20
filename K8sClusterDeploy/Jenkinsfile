@@ -5,9 +5,7 @@ pipeline {
               steps {
                 withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
                   sh '''
-		    pwd
-		    ls -la
-                    kubectl apply -f release-controller-blue-zone.json
+		    kubectl apply -f K8sClusterDeploy\release-controller-blue-zone.json
                   '''
                 }
               }
