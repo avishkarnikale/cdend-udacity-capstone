@@ -29,7 +29,7 @@ pipeline {
 		stage('Create k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
-					sh 'eksctl delete cluster --name=app-cluster
+					sh 'eksctl delete cluster --name=app-cluster'
 				}
 			}
 		}
