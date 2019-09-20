@@ -27,6 +27,21 @@ pipeline {
 				'''
 			}
 		}
-	}
-  }
+	   }
+	   stage('Redirect Traffic To Green Zone?') {
+		    steps {
+			input "Redirect Traffic To Green Zone?"
+		    }
+           }
+
+	   stage('Direct to Green Zone') {
+		    steps {
+			withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
+				sh '''
+					kubectl apply -f lb-service-direct-green-zone.json
+				'''
+			}
+		    }
+	 }
+   }
 }
