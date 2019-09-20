@@ -21,7 +21,7 @@ pipeline {
            }
 	   stage('Direct to Blue Zone') {
 		steps {
-			withAWS(region:'us-east-1', credentials:'aws-static') {
+			withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
 				sh '''
 					kubectl apply -f lb-service-direct-blue-zone.json
 				'''
