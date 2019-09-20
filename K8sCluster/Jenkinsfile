@@ -23,6 +23,15 @@ pipeline {
 				}
 			}
         	}
+		stage('Create app-cluster conf') {
+			steps {
+				withAWS(region:'us-east-1', credentials:'aws-static') {
+					sh '''
+						aws eks --region us-east-1 update-kubeconfig --name app-cluster
+					'''
+				}
+			}
+		}
 		stage('Test k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
