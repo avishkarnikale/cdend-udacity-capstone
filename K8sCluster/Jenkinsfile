@@ -2,12 +2,13 @@ pipeline {
 	agent any
 	stages {
 
-		stage('Create kubernetes cluster') {
+		stage('Create k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-static') {
 					sh 'echo "Hello World"'
       			        }
 			}
-  }
+        	}
+	}
 }
      
