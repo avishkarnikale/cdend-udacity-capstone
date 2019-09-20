@@ -10,15 +10,7 @@ pipeline {
                 }
               }
            }
-	   stage('Deploy Green Zone') {
-              steps {
-                withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
-                  sh '''
-		    kubectl apply -f release-controller-green-zone.json
-                  '''
-                }
-              }
-           }
+	   
 	   stage('Direct to Blue Zone') {
 		steps {
 			withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
@@ -32,6 +24,15 @@ pipeline {
 		    steps {
 			input "Redirect Traffic To Green Zone?"
 		    }
+           }
+	   stage('Deploy Green Zone') {
+              steps {
+                withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
+                  sh '''
+		    kubectl apply -f release-controller-green-zone.json
+                  '''
+                }
+              }
            }
 
 	   stage('Direct to Green Zone') {
