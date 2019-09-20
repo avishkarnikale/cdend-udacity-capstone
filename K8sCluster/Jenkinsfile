@@ -1,0 +1,11 @@
+pipeline {
+	agent any
+	stages {
+
+		stage('Create kubernetes cluster') {
+			steps {
+				withAWS(region:'ap-southeast-1', credentials:'aws-static') {
+      }
+  }
+}
+     
