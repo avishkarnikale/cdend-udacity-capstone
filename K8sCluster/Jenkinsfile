@@ -1,7 +1,11 @@
 pipeline {
 	agent any
 	stages {
-
+		stage('Test User Approval (4 Eyes , Segregation of Duty etc.') {
+			    steps {
+				input "Would you like to create the cluster?"
+			    }
+		}
 		stage('Create k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
