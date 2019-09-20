@@ -1,11 +1,7 @@
 pipeline {
 	agent any
 	stages {
-		stage('Test User Approval (4 Eyes , Segregation of Duty etc.') {
-			    steps {
-				input "Would you like to create the cluster?"
-			    }
-		}
+		
 		stage('Create k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
@@ -45,18 +41,6 @@ pipeline {
 					sh '''
 						kubectl config use-context arn:aws:eks:ap-southeast-1:423966027140:cluster/app-cluster
 					'''
-				}
-			}
-		}
-		stage('Delete Cluster Checkpoint') {
-			    steps {
-				input "Would you like to delete the cluster?"
-			    }
-		}
-		stage('Delete k8s cluster') {
-			steps {
-				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
-					sh 'eksctl delete cluster --name=app-cluster'
 				}
 			}
 		}
