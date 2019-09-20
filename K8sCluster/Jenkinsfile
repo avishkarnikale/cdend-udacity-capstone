@@ -5,11 +5,34 @@ pipeline {
 		stage('Create k8s cluster') {
 			steps {
 				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
-					sh 'echo "Hello World"'
+					sh '''
+						eksctl create cluster \
+						--name app-cluster \
+						--version 1.13 \
+						--nodegroup-name standard-workers \
+						--node-type t2.micro \
+						--nodes 2 \
+						--nodes-min 1 \
+						--nodes-max 3 \
+						--node-ami auto
+					'''
 				}
-      			        
 			}
         	}
+		stage('Test k8s cluster') {
+			steps {
+				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
+					sh 'kubectl get nodes # if we see our 2 nodes, we know we have authenticated correctly'
+				}
+			}
+		}
+		stage('Create k8s cluster') {
+			steps {
+				withAWS(region:'ap-southeast-1', credentials:'aws-k8s-adm') {
+					sh 'eksctl delete cluster --name=app-cluster
+				}
+			}
+		}
 	}
 }
      
